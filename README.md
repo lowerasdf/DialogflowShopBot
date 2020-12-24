@@ -22,7 +22,7 @@ In order to run the webhook, open another terminal window and run this command:
 You should be able to see the tunnel from ngrok to your local server running. Now, you want to copy the first https link (e.g. https://abcde12345.ngrok.io).
 
 #### Dialogflow
-Go to the [dialogflow console](https://dialogflow.cloud.google.com/) and export this [agent](WiscShopBot.zip). Then, go to `fulfillment`, and enable `webhook`. Then, fill out the URL field with the https link you retrieved from the previous step. Save it, and the bot is ready to go. To view output of the tunnel, open another terminal window and run <pre><code>npm run dev</code></pre>
+Go to the [dialogflow console](https://dialogflow.cloud.google.com/) and import this [agent](WiscShopBot.zip). Then, go to `fulfillment`, and enable `webhook`. Then, fill out the URL field with the https link you retrieved from the previous step. Save it, and the bot is ready to go. To view output of the tunnel, open another terminal window and run <pre><code>npm run dev</code></pre>
 This will output the logs.
 
 #### (Optional) Local Endpoints
