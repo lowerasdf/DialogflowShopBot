@@ -11,7 +11,7 @@ let username = "";
 let password = "";
 let token = "";
 
-USE_LOCAL_ENDPOINT = false;
+USE_LOCAL_ENDPOINT = true;
 // set this flag to true if you want to use a local endpoint
 // set this flag to false if you want to use the online endpoint
 ENDPOINT_URL = ""
@@ -89,8 +89,8 @@ app.post('/', express.json(), (req, res) => {
     }
   }
 
-  function welcome() {
-    send_message(agent.query, true);
+  async function welcome() {
+    await send_message(agent.query, true);
     let res = 'Welcome to WiscShop Badger Store! I am Buzzy, the assistant bot here. How can I help you today?';
     agent.add(res)
     console.log(ENDPOINT_URL);
@@ -124,7 +124,7 @@ app.post('/', express.json(), (req, res) => {
   }
 
   async function navigate_to() {
-    send_message(agent.query, true);
+    await send_message(agent.query, true);
     let page = agent.parameters.page;
     let success = false;
 
@@ -230,7 +230,7 @@ app.post('/', express.json(), (req, res) => {
   }
 
   async function show_all_tags() {
-    send_message(agent.query, true);
+    await send_message(agent.query, true);
     let page;
     if (agent.parameters.page === "") {
       let context = agent.context.get("current_page");
@@ -312,7 +312,7 @@ app.post('/', express.json(), (req, res) => {
   }
 
   async function navigate_to_and_filter() {
-    send_message(agent.query, true);
+    await send_message(agent.query, true);
     let page;
     if (agent.parameters.page === "") {
       let context = agent.context.get("current_page");
@@ -413,7 +413,7 @@ app.post('/', express.json(), (req, res) => {
   }
 
   async function cart_info() {
-    send_message(agent.query, true);
+    await send_message(agent.query, true);
     let items = await get_items_in_cart();
     let resp = "";
     let category = new Map();
@@ -502,7 +502,7 @@ app.post('/', express.json(), (req, res) => {
   }
 
   async function add_to_cart() {
-    send_message(agent.query, true);
+    await send_message(agent.query, true);
     let product = agent.parameters.product;
     let pid;
     if (product === "" || isNull(product)) {
@@ -556,7 +556,7 @@ app.post('/', express.json(), (req, res) => {
   }
 
   async function remove_from_cart() {
-    send_message(agent.query, true);
+    await send_message(agent.query, true);
     let product = agent.parameters.product;
     let pid;
     if (product === "" || isNull(product)) {
@@ -627,7 +627,7 @@ app.post('/', express.json(), (req, res) => {
   }
 
   async function go_back() {
-    send_message(agent.query, true);
+    await send_message(agent.query, true);
     let request = {
       method: 'PUT',
       headers: {
@@ -686,7 +686,7 @@ app.post('/', express.json(), (req, res) => {
   }
 
   async function product_info() {
-    send_message(agent.query, true);
+    await send_message(agent.query, true);
     let product = agent.parameters.product;
     let pid;
     if (product === "" || isNull(product)) {
@@ -764,7 +764,9 @@ app.post('/', express.json(), (req, res) => {
       "This is " + name + ". " + nice_text + "This is a " + category + " that cost $" + price + "." + context_description,
       "This is " + name + ". " + nice_text + "This is a $" + price + " " + category + "." + context_description
     ]
-    agent.add(randomized_response(responses_list));
+    let resp = randomized_response(responses_list);
+    await send_message(resp, false);
+    agent.add(resp);
     if (resp2 !== "") {
       send_message(resp2, false);
       agent.add(resp2);
@@ -772,7 +774,7 @@ app.post('/', express.json(), (req, res) => {
   }
 
   async function product_rating() {
-    send_message(agent.query, true);
+    await send_message(agent.query, true);
     let product = agent.parameters.product;
     let pid;
     if (product === "" || isNull(product)) {
@@ -872,7 +874,7 @@ app.post('/', express.json(), (req, res) => {
   }
 
   async function clear_cart() {
-    send_message(agent.query, true);
+    await send_message(agent.query, true);
     let success = await clear_cart_server();
     if (success) {
       let responses_list = [
@@ -890,7 +892,6 @@ app.post('/', express.json(), (req, res) => {
   }
 
   async function confirm_and_purchase() {
-    send_message(agent.query, true);
     let currPage = await get_current_page();
     if (!isNull(currPage)) {
       let splitted_url = currPage.split("/");
@@ -948,6 +949,18 @@ app.post('/', express.json(), (req, res) => {
     }
   }
 
+  async function show_all_categories() {
+    await send_message(agent.query, true);
+    let responses_list = [
+      "We have a variety of outfits, including hats, sweatshirts, tees, bottoms, and leggings. We also have Bucky plushies too!",
+      "We have a wide collection of hats, sweatshirts, tees, bottoms, and leggings. We also have plushies and keychains for gifts too!",
+      "We have outfits, such as sweatshirts, tees, and bottoms. We also have hats and leggings, and plushies too!"
+    ];
+    let resp = randomized_response(responses_list);
+    send_message(resp, false);
+    agent.add(resp);
+  }
+
   let intentMap = new Map()
   intentMap.set('Default Welcome Intent', welcome)
   intentMap.set('login', login)
@@ -962,6 +975,7 @@ app.post('/', express.json(), (req, res) => {
   intentMap.set('product_rating', product_rating)
   intentMap.set('clear_cart', clear_cart)
   intentMap.set('confirm_and_purchase', confirm_and_purchase)
+  intentMap.set('show_all_categories', show_all_categories)
   agent.handleRequest(intentMap)
 })
 
